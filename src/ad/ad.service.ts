@@ -1,0 +1,84 @@
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { AdUser } from './dto/adUser.dto';
+import { AdOptions } from './dto/adOptions.dto';
+
+@Injectable()
+export class AdService {
+
+    private ad: any;
+
+    constructor(
+        private readonly configServiсe: ConfigService,        
+    ) {
+        const ActiveDirectory = require('activedirectory2').default || require('activedirectory2');
+
+        const config = {
+            url: this.configServiсe.get('AD_URL'),
+            baseDN: this.configServiсe.get('AD_BASE_DN'),
+            username: this.configServiсe.get('AD_USER'),
+            password: this.configServiсe.get('AD_PSWD'),
+        };
+
+        this.ad = new ActiveDirectory(config);
+    }
+
+    private escapeLdapSearchValue(str: string): string {
+    if (typeof str !== 'string') return '';
+    return str
+      .replace(/\\/g, '\\5c')
+      .replace(/\*/g, '\\2a')
+      .replace(/\(/g, '\\28')
+      .replace(/\)/g, '\\29')
+      .replace(/\0/g, '\\00')
+      .replace(/\//g, '\\2f');
+  }
+
+    async findOneUser(name: string) {
+        const opts: AdOptions = this.getOption(name) || {};
+
+        return this.getAdData(opts);
+    }
+
+    async findAllUsers() {
+        const opts: AdOptions = this.getOption() || {};
+
+        return  await this.getAdData(opts)
+            .then(list => list?.['users'])
+            .then(users => users.filter(user => user.mail) )
+    }
+
+    private getOption(name?: string) : AdOptions {
+        let filter: any;
+        if(name) filter = `(&(objectClass=user)(displayName=*${this.escapeLdapSearchValue(name)}*))`
+        else filter = '(&(objectClass=user)(!(objectClass=computer))(!(userAccountControl:1.2.840.113556.1.4.803:=2)))'
+
+        return {
+        filter,
+        scope: 'sub',
+        attributes: [
+            'sAMAccountName',
+            'displayName',
+            'mail',
+            'telephoneNumber',
+            'physicalDeliveryOfficeName',
+            'title',
+            'department',
+        ]};
+    }
+
+    private async getAdData(opts: AdOptions): Promise<any[]> {
+        return new Promise((resolve, reject) => {
+            this.ad.find(opts, (err, users) => {
+                if (err) {
+                    console.error('Ошибка при получении пользователей из AD:', err);
+                    return reject(err);
+                }
+                
+                resolve(users || []);
+            });
+        });
+    }
+
+
+}
