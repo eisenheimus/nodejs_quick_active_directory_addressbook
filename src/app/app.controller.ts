@@ -1,4 +1,4 @@
-import { Controller, Get, HttpCode, Param } from '@nestjs/common';
+import { Controller, Get, HttpCode, Param, Render } from '@nestjs/common';
 import { AdService } from 'src/ad/ad.service';
 
 @Controller()
@@ -7,9 +7,11 @@ export class AppController {
     private readonly adServise: AdService
   ) {}
 
+  @Render('index')
   @Get('/')
   async findAllUsers() {
-    return await this.adServise.findAllUsers();
+     return {users: await this.adServise.findAllUsers()};
+   
   }
 
   @Get(":user")

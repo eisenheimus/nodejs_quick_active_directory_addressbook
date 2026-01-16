@@ -46,6 +46,17 @@ export class AdService {
         return  await this.getAdData(opts)
             .then(list => list?.['users'])
             .then(users => users.filter(user => user.mail) )
+            .then(users => users.filter(user => !user.wWWHomePage) )
+            .then(users => users.sort((a, b) => {
+                const nameA = (a.displayName || '').toLowerCase();
+                const nameB = (b.displayName || '').toLowerCase();
+
+                if (nameA < nameB) return -1;
+                if (nameA > nameB) return 1;
+                
+                return 0;
+            }))
+
     }
 
     private getOption(name?: string) : AdOptions {
@@ -54,17 +65,18 @@ export class AdService {
         else filter = '(&(objectClass=user)(!(objectClass=computer))(!(userAccountControl:1.2.840.113556.1.4.803:=2)))'
 
         return {
-        filter,
-        scope: 'sub',
-        attributes: [
-            'sAMAccountName',
-            'displayName',
-            'mail',
-            'telephoneNumber',
-            'physicalDeliveryOfficeName',
-            'title',
-            'department',
-        ]};
+            filter,
+            scope: 'sub',
+            attributes: [
+                'sAMAccountName',
+                'displayName',
+                'mail',
+                'telephoneNumber',
+                'physicalDeliveryOfficeName',
+                'title',
+                'department',
+                'wWWHomePage',
+            ]};
     }
 
     private async getAdData(opts: AdOptions): Promise<any[]> {

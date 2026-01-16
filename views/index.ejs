@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  table {
+    border-collapse: collapse;
+    width: 80%;
+    margin: 0 auto;
+  }
+  th, td {
+    border: 1px solid #000;
+    padding: 8px;
+    text-align: left;
+  }
+  tbody tr:nth-child(even) {
+    background-color: #eee;
+  }
+  h1 {
+    margin-left: 10%;
+  }
+</style>
+</head>
+<body>
+  <h1>Quick Active Directory addressbook</h1>
+<table border="1" cellpadding="8" cellspacing="0">
+  <thead>
+    <tr>
+      <th>Имя</th>    
+      <th>Должность</th>  
+      <th><strong>Телефон</strong></th>
+      <th>Офис</th>
+      
+      <th>Отдел</th>
+      <th>Email</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% users.forEach(user => { %>
+      <tr>
+        <td><%= user.displayName || '' %></td>
+         <td><%= user.title || '' %></td>
+        <td><%= user.telephoneNumber || '' %></td>
+        <td><%= user.physicalDeliveryOfficeName || '' %></td>
+       
+        <td><%= user.department || '' %></td>
+        <td><%= user.mail || '' %></td>
+      </tr>
+    <% }); %>
+  </tbody>
+</table>
+
+  <!-- <ul>
+    <% users.forEach(user => { %>
+      <li><%= user.displayName %> — <%= user.mail %></li>
+    <% }) %>
+  </ul> -->
+
+
+</body>
+</html>
