@@ -11,7 +11,6 @@ export class AppController {
   @Get('/')
   async findAllUsers() {
      return {users: await this.adServise.findAllUsers()};
-   
   }
 
   @Get(":user")

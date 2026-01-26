@@ -17,7 +17,7 @@ async function bootstrap() {
 
   await app.listen(process.env.PORT ?? 3000).then(() => {
     logger.verbose(`*** Server started on ${PORT} port ***`)
-  })
+  });
 
 }
 bootstrap();
