@@ -1,47 +1,49 @@
 <!DOCTYPE html>
 <html>
 <head>
-<style>
-  table {
-    border-collapse: collapse;
-    width: 80%;
-    margin: 0 auto;
-  }
-  th, td {
-    border: 1px solid #000;
-    padding: 8px;
-    text-align: left;
-  }
-  tbody tr:nth-child(even) {
-    background-color: #eee;
-  }
-  h1 {
-    margin-left: 10%;
-  }
-</style>
+<title>Адресная книга Ли Вест</title>
+<link rel="icon" type="image/x-icon" href="/img/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="/css/style.css">
 </head>
 <body>
-  <h1>Quick Active Directory addressbook</h1>
-<table border="1" cellpadding="8" cellspacing="0">
+  <div class="sticky-top">
+    <div class="header">
+      <img src="/img/logo.png" alt="logo">
+      <h1>Адресная книга Ли Вест</h1>
+    </div>
+    <div class="search-container">
+      <input type="text" id="searchInput" placeholder="🔍 Поиск по имени, должности, телефону, отделу, email..." autofocus>
+    </div>
+  </div>
+<table border="1" cellpadding="8" cellspacing="0" id="addressTable">
   <thead>
     <tr>
-      <th>Имя</th>    
-      <th>Должность</th>  
-      <th><strong>Телефон</strong></th>
-      <th>Офис</th>
-      
-      <th>Отдел</th>
-      <th>Email</th>
+      <th data-sort="none"></th>
+      <th data-sort="text">Имя<span class="sort-icon">⇅</span></th>    
+      <th data-sort="text">Должность<span class="sort-icon">⇅</span></th>  
+      <th data-sort="text">Телефон<span class="sort-icon">⇅</span></th>
+      <th data-sort="text">Офис<span class="sort-icon">⇅</span></th>
+      <th data-sort="text">Отдел<span class="sort-icon">⇅</span></th>
+      <th data-sort="text">Email<span class="sort-icon">⇅</span></th>
     </tr>
   </thead>
   <tbody>
     <% users.forEach(user => { %>
       <tr>
+        <td style="text-align: center; width: 50px;">
+          <% if (user.avatarBase64) { %>
+            <img src="<%= user.avatarBase64 %>" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
+          <% } else { %>
+            <div style="width: 40px; height: 40px; border-radius: 50%; background: #008080; color: white; display: inline-flex; align-items: center; justify-content: center; font-weight: 600;"><%= (user.displayName || '?')[0] %></div>
+          <% } %>
+        </td>
         <td><%= user.displayName || '' %></td>
-         <td><%= user.title || '' %></td>
+        <td><%= user.title || '' %></td>
         <td><%= user.telephoneNumber || '' %></td>
         <td><%= user.physicalDeliveryOfficeName || '' %></td>
-       
         <td><%= user.department || '' %></td>
         <td><%= user.mail || '' %></td>
       </tr>
@@ -49,5 +51,13 @@
   </tbody>
 </table>
 
+
+<script type="text/javascript" src="/js/index.js">
+
+</script>
+
+<footer>
+  © 2025 Разработчик — <span>Снигир Антон</span>
+</footer>
 </body>
 </html>

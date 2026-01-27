@@ -18,6 +18,15 @@ export class AdService {
             baseDN: this.configServiсe.get('AD_BASE_DN'),
             username: this.configServiсe.get('AD_USER'),
             password: this.configServiсe.get('AD_PSWD'),
+            attributes: {
+                user: ['thumbnailPhoto']
+            },
+            entryParser: (entry, raw, callback) => {
+                if (raw.hasOwnProperty('thumbnailPhoto')) {
+                    entry.thumbnailPhoto = raw.thumbnailPhoto;
+                }
+                callback(entry);
+            }
         };
 
         this.ad = new ActiveDirectory(config);
@@ -53,10 +62,23 @@ export class AdService {
 
                 if (nameA < nameB) return -1;
                 if (nameA > nameB) return 1;
-
+                
                 return 0;
             }))
-            .catch(console.log)
+            .then(users => users.map(user => {
+                let avatarBase64: string | null = null;
+                if (user.thumbnailPhoto) {
+                    try {
+                        const photoBuffer = Buffer.isBuffer(user.thumbnailPhoto) 
+                            ? user.thumbnailPhoto 
+                            : Buffer.from(user.thumbnailPhoto, 'binary');
+                        avatarBase64 = `data:image/jpeg;base64,${photoBuffer.toString('base64')}`;
+                    } catch (e) {
+                        avatarBase64 = null;
+                    }
+                }
+                return { ...user, avatarBase64 };
+            }))
 
     }
 
@@ -77,6 +99,7 @@ export class AdService {
                 'title',
                 'department',
                 'wWWHomePage',
+                'thumbnailPhoto',
             ]};
     }
 
@@ -88,10 +111,11 @@ export class AdService {
                     return reject(err);
                 }
                 
-                resolve(users || [])
+                resolve(users || []);
                 reject(err)
             });
         });
     }
+
 
 }
